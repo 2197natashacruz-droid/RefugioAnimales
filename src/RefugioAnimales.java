@@ -2,9 +2,7 @@ import java.util.*;
 
 public class RefugioAnimales {
     public static void main(String[] args) {
-        // se llama la utilidad scanner
         Scanner scan = new Scanner(System.in);
-        // aquí declaramos e iniciamos variables
         boolean activo = true;
         List<String> animales = new ArrayList<>();
         Map<String, String> estadoAnimal = new HashMap<>();
@@ -28,7 +26,6 @@ public class RefugioAnimales {
             scan.nextLine(); // limpiar buffer
 
             switch (opcion) {
-
                 case 1 -> RegistrarAnimal(
                     scan,
                     animales,
@@ -39,19 +36,9 @@ public class RefugioAnimales {
                     estados
                 );
 
-                case 2 -> registrarEspecie(scan);
-
-                case 3 -> marcarAdoptado(scan);
-
-                case 4 -> mostrarDisponibles();
-
-                case 5 -> mostrarAdoptados();
-
-                case 6 -> mostrarReporte();
+                case 6 -> mostrarReporte(animales, estadoAnimal, animalEspecie, nombreOriginal);
 
                 case 7 -> activo = false;
-
-
 
                 default -> System.out.println("Opcion no valida");
             }
@@ -87,17 +74,17 @@ public class RefugioAnimales {
         String especieInput = scan.nextLine().trim();
         String especie = especieInput.toLowerCase();
 
-            if(!especies.contains(especie)){
+        if(!especies.contains(especie)){
             System.out.println("La especie no existe.");
             System.out.print("¿Desea registrarla? (s/n): ");
             String respuesta = scan.nextLine();
 
             if(respuesta.equalsIgnoreCase("s")) {
-            especies.add(especie);
-            System.out.println("Especie registrada.");
-            }else{
-            System.out.println("Registro cancelado.");
-            return;
+                especies.add(especie);
+                System.out.println("Especie registrada.");
+            } else {
+                System.out.println("Registro cancelado.");
+                return;
             }
         }
 
@@ -107,14 +94,46 @@ public class RefugioAnimales {
         nombreOriginal.put(nombre, nombreFormateado);
         animalEspecie.put(nombre, especie);
         System.out.println("Animal registrado");
-
-
-
-
     }
 
     public static String capitalizar(String texto){
         if (texto == null || texto.isEmpty()) return texto;
         return texto.substring(0, 1).toUpperCase() + texto.substring(1).toLowerCase();
+    }
+
+    public static void mostrarReporte(List<String> animales, Map<String, String> estadoAnimal, Map<String, String> animalEspecie, Map<String, String> nombreOriginal) {
+        long adoptados = animales.stream()
+                .filter(animal -> "Adoptado".equalsIgnoreCase(estadoAnimal.get(animal)))
+                .count();
+
+        List<String> reporte = new ArrayList<>();
+
+        reporte.add("\n========= REPORTE GENERAL =========");
+        reporte.add(String.format("Total de animales registrados: %d", animales.size()));
+        reporte.add(String.format("Total disponibles             : %d", animales.size() - adoptados));
+        reporte.add(String.format("Total adoptados               : %d", adoptados));
+
+        reporte.add("\n--- Animales registrados ---");
+        if (animales.isEmpty()) {
+            reporte.add("No hay animales registrados.");
+        } else {
+            reporte.add("+-----------------+--------------+------------+");
+            reporte.add("| NOMBRE          | ESPECIE      | ESTADO     |");
+            reporte.add("+-----------------+--------------+------------+");
+
+            for (String animal : animales) {
+                String nombreMostrar = nombreOriginal.getOrDefault(animal, capitalizar(animal));
+                String especie = animalEspecie.getOrDefault(animal, "Sin especie");
+                String estado = estadoAnimal.getOrDefault(animal, "Disponible");
+
+                reporte.add(String.format("| %-15s | %-12s | %-10s |",
+                        nombreMostrar,
+                        especie,
+                        estado));
+            }
+
+            reporte.add("+-----------------+--------------+------------+");
+        }
+        reporte.forEach(System.out::println);
     }
 }
