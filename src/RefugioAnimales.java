@@ -27,24 +27,21 @@ public class RefugioAnimales {
 
             switch (opcion) {
                 case 1 -> RegistrarAnimal(
-                    scan,
-                    animales,
-                    especies,
-                    estadoAnimal,
-                    animalEspecie,
-                    nombreOriginal,
-                    estados
-                );
-                case 2:
-                    registrarEspecie();
-                    break;
-                case 3:
+                        scan,
+                        animales,
+                        especies,
+                        estadoAnimal,
+                        animalEspecie,
+                        nombreOriginal,
+                        estados);
+                case 2 -> registrarEspecie();
+                case 3 ->
                     adoptarAnimal();
-                    break;
-                case 4:
+
+                case 4 ->
                     mostrarDisponibles();
-                    break;
-              
+
+                case 5 -> mostrarAdoptados();
                 case 6 -> mostrarReporte(animales, estadoAnimal, animalEspecie, nombreOriginal);
 
                 case 7 -> activo = false;
@@ -68,13 +65,15 @@ public class RefugioAnimales {
         System.out.println("7. Salir");
     }
 
-    public static void RegistrarAnimal(Scanner scan, List<String> animales, Set<String> especies, Map<String, String> estadoAnimal, Map<String, String> animalEspecie, Map<String, String> nombreOriginal, String[] estados) {
+    public static void RegistrarAnimal(Scanner scan, List<String> animales, Set<String> especies,
+            Map<String, String> estadoAnimal, Map<String, String> animalEspecie, Map<String, String> nombreOriginal,
+            String[] estados) {
         System.out.println("Ingrese nombre del animal: ");
         String input = scan.nextLine().trim();
         String nombre = input.toLowerCase();
         String nombreFormateado = capitalizar(input);
 
-        if(animales.contains(nombre)) {
+        if (animales.contains(nombre)) {
             System.out.println("El animal " + nombreFormateado + " ya esta registrado.");
             return;
         }
@@ -83,12 +82,12 @@ public class RefugioAnimales {
         String especieInput = scan.nextLine().trim();
         String especie = especieInput.toLowerCase();
 
-        if(!especies.contains(especie)){
+        if (!especies.contains(especie)) {
             System.out.println("La especie no existe.");
             System.out.print("¿Desea registrarla? (s/n): ");
             String respuesta = scan.nextLine();
 
-            if(respuesta.equalsIgnoreCase("s")) {
+            if (respuesta.equalsIgnoreCase("s")) {
                 especies.add(especie);
                 System.out.println("Especie registrada.");
             } else {
@@ -105,27 +104,29 @@ public class RefugioAnimales {
         System.out.println("Animal registrado");
     }
 
-    public static String capitalizar(String texto){
-        if (texto == null || texto.isEmpty()) return texto;
+    public static String capitalizar(String texto) {
+        if (texto == null || texto.isEmpty())
+            return texto;
         return texto.substring(0, 1).toUpperCase() + texto.substring(1).toLowerCase();
     }
-// -----------------------OPCION 2-------------
-static void registrarEspecie() {
-    System.out.print("Ingrese nombre de la especie: ");
-    String especie = scanner.nextLine().trim();
 
-    if (especie.isEmpty()) {
-        System.out.println("La especie no puede estar vacía.");
-        return;
-    }
+    // -----------------------OPCION 2-------------
+    static void registrarEspecie() {
+        System.out.print("Ingrese nombre de la especie: ");
+        String especie = scanner.nextLine().trim();
 
-    if (especies.add(especie)) {
-        System.out.println(" Especie registrada.");
-    } else {
-        System.out.println("La especie ya existe.");
+        if (especie.isEmpty()) {
+            System.out.println("La especie no puede estar vacía.");
+            return;
+        }
+
+        if (especies.add(especie)) {
+            System.out.println(" Especie registrada.");
+        } else {
+            System.out.println("La especie ya existe.");
+        }
     }
-}
-     // ---------------- OPCIÓN 3 ----------------
+    // ---------------- OPCIÓN 3 ----------------
 
     public static void adoptarAnimal() {
         System.out.println("\n--- Adoptar Animal ---");
@@ -181,8 +182,24 @@ static void registrarEspecie() {
         }
     }
 
+    public static void mostrarAdoptados() {
+        boolean hayAdoptados = false;
+        System.out.println("\nAnimales adoptados:");
 
-    public static void mostrarReporte(List<String> animales, Map<String, String> estadoAnimal, Map<String, String> animalEspecie, Map<String, String> nombreOriginal) {
+        for (String a : animales) {
+            if (estadoAnimal.get(a).equals(estados[1])) {
+                System.out.println("- " + a);
+                hayAdoptados = true;
+            }
+        }
+
+        if (!hayAdoptados) {
+            System.out.println("No hay animales adoptados");
+        }
+    }
+
+    public static void mostrarReporte(List<String> animales, Map<String, String> estadoAnimal,
+            Map<String, String> animalEspecie, Map<String, String> nombreOriginal) {
         long adoptados = animales.stream()
                 .filter(animal -> "Adoptado".equalsIgnoreCase(estadoAnimal.get(animal)))
                 .count();
